@@ -10,7 +10,7 @@ export const createUser = async (req, res, next)=>{
     try {
         const { name, phone } = req.body;
 
-        const userCreate = new User({ name: "liya", phone: 20 , age:20})
+        const userCreate = new User({ name,phone })
         await userCreate.save()
         
         res.status(200).json({ message: `${ userCreate.name } is created`, data: userCreate });
@@ -99,12 +99,12 @@ export const findAndUpdate = async (req, res, next) =>{
     
     try {
         const { id } = req.params;
-        const data ={ ...req.body } ;
+        const { name, phone } = req.body;
         
       console.log(req.body)
         const updateUser = await User.findOneAndUpdate (
             { _id: id },
-            { $set: data },
+            { $set: { name, phone } },
             { new: true, runValidators: true }
         );
 
@@ -133,19 +133,43 @@ export const findAndUpdate = async (req, res, next) =>{
 export const updatemany = async (req, res, next) => {
   try {
     const { name, phone } = req.body;
-    const { age } = req.query;
+    const { age } = req.params;
 
-    const manyUpdate = await User.updatemany(
+    const manyUpdate = await User.updateMany(
       { age: { $gte: age } },
       { name, phone }
     );
-    if (result.matchedCount === 0) {
+    if (manyUpdate.matchedCount === 0) {
       return res.status(404).json({ message: "No users found to update" });
     }
     res
       .status(200)
-      .json({ message: `${result.matchedCount} users updated`, data: result });
+      .json({ message: `${manyUpdate.matchedCount} users updated`, data: manyUpdate });
   } catch (error) {
     next(new Error("Error updating users: " + error.message));
   }
 };
+
+
+//findOneAndDelete
+
+
+
+export const finddelete = async( req, res, next)=>{
+    try {
+        const {id} = req.params;
+
+
+        const deleteOneUser = await User.findOneAndDelete(
+            { _id: id}
+        )
+
+        if(!deleteOneUser){
+            res.status(400).json({message:`user not find`, data:deleteOneUser})
+        }
+
+        res.status(202).json({message:`user deleted successfully` ,data:deleteOneUser})
+    } catch (error) {
+        next(new Error("error deleting user :" + error.message))
+    }
+}

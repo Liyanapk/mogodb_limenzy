@@ -13,7 +13,7 @@ export const dbconnect = async()=>{
         
     } catch (error) {
         console.log(error);
-        process.exist(1)
+        process.exit(1)
         
     }
 }
