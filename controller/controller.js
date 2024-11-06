@@ -2,8 +2,6 @@ import User from "../schema/userSchema.js";
 
 
 
-
-
 //create user
 export const createUser = async (req, res, next)=>{
 
@@ -21,7 +19,6 @@ export const createUser = async (req, res, next)=>{
         next(new Error("Error creating user: " + error.message));
         res.status(500).json({ message:`Internal server error!` })
     }
-
 }
 
 
@@ -34,11 +31,13 @@ export const findUser = async( req, res, next) =>{
     try {
         const { name } =req.params
         const user = await User.find({ name:name });
-        res.status(200).json({ message:`${ findUser.name } is found` , data :user})
+
+        res.status(200).json({ message:`${ findUser.name } is found` , data :user })
         console.log( typeof(user));
        
     }   catch (error) {
-        next( new Error("Error find user: " + error.message));
+        next( new Error( "Error find user: " + error.message ));
+
         res.status(500).json({ message:`Internal server error!` })
     }
 
@@ -81,7 +80,7 @@ export const findById = async( req, res, next) =>{
         console.log( typeof(user));
        
     }   catch (error) {
-        next(new Error("Error find user: " + error.message));
+        next(new Error( "Error find user: " + error.message ));
 
         res.status(500).json({ message:`Internal server error!` })
     }
@@ -101,25 +100,26 @@ export const findAndUpdate = async (req, res, next) =>{
         const { id } = req.params;
         const { name, phone } = req.body;
         
-      console.log(req.body)
-        const updateUser = await User.findOneAndUpdate (
+        console.log (req.body)
+         const updateUser = await User.findOneAndUpdate (
             { _id: id },
             { $set: { name, phone } },
             { new: true, runValidators: true }
         );
 
-        console.log( req.body)
+        console.log ( req.body)
 
-        if(!updateUser){
+        if (!updateUser) {
 
             res.status(400).json({ message:`user not found` })
-        }else{
+
+        } else {
 
             res.status(200).json({ message:`user updated` , data : updateUser })
         }
 
     }   catch (error) {
-        next(new Error("Error : " + error.message));
+        next( new Error("Error : " + error.message) );
 
         res.status(500).json({ message:`Internal server error!` })
     }
@@ -139,14 +139,15 @@ export const updatemany = async (req, res, next) => {
       { age: { $gte: age } },
       { name, phone }
     );
+
     if (manyUpdate.matchedCount === 0) {
-      return res.status(404).json({ message: "No users found to update" });
+      return res.status(404).json( { message: "No users found to update" } );
     }
     res
       .status(200)
-      .json({ message: `${manyUpdate.matchedCount} users updated`, data: manyUpdate });
+      .json( { message: `${manyUpdate.matchedCount} users updated`, data: manyUpdate } );
   } catch (error) {
-    next(new Error("Error updating users: " + error.message));
+    next(new Error( "Error updating users: " + error.message ));
   }
 };
 
@@ -155,21 +156,23 @@ export const updatemany = async (req, res, next) => {
 
 
 
-export const finddelete = async( req, res, next)=>{
+export const finddelete = async ( req, res, next)=>{
     try {
         const {id} = req.params;
 
 
         const deleteOneUser = await User.findOneAndDelete(
-            { _id: id}
+            { _id: id }
         )
 
-        if(!deleteOneUser){
-            res.status(400).json({message:`user not find`, data:deleteOneUser})
+        if ( !deleteOneUser ) {
+
+            res.status(400).json({ message:`user not find`, data:deleteOneUser })
         }
 
         res.status(202).json({message:`user deleted successfully` ,data:deleteOneUser})
-    } catch (error) {
-        next(new Error("error deleting user :" + error.message))
+
+    }   catch (error) {
+        next(new Error( "error deleting user :" + error.message ))
     }
 }
