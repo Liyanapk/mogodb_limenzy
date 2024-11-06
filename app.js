@@ -12,6 +12,9 @@ app.use(express.json())
 app.use('/',router)
 dbconnect()
 
+
+app.use(express.static('uploads'));
+
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });

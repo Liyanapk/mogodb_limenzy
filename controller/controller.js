@@ -176,3 +176,31 @@ export const finddelete = async ( req, res, next)=>{
         next(new Error( "error deleting user :" + error.message ))
     }
 }
+
+
+//multer
+
+
+
+export const createUserFile = async (req, res) => {
+    try {
+      const { name, phone, age } = req.body;
+      let profilePicturePath = null;
+  
+      
+      if (req.file) {
+        profilePicturePath = req.file.path;  
+      }
+  
+      const newUser = new User(
+          { name, phone, age, profilePicture: profilePicturePath }
+       );
+  
+      await newUser.save();
+      res.status(201).json({ message: 'User created successfully', data: newUser });
+    } catch (error) {
+      res.status(500).json({ message: 'Error creating user', error: error.message });
+    }
+  };
+
+ 
