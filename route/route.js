@@ -9,7 +9,8 @@ router.post('/newuser',upload.single('pic') ,createUser)
 router.get('/user/:name',findUser)
 router.get('/user/find/:name',findOne)
 router.get('/user/id/:id',findById)
-router.patch('/user/update/:id',findAndUpdate )
+router.patch('/user/update/:id',upload.single('pic'),findAndUpdate )
 router.patch('/users/age/:age',updatemany)
 router.delete('/user/delete/:id',finddelete)
+
 export default router;

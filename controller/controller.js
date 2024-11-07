@@ -3,23 +3,31 @@ import User from "../schema/userSchema.js";
 
 
 //create user
-export const createUser = async (req, res, next)=>{
+
+export const createUser = async (req, res, next) => {
 
     try {
-        const { name, phone } = req.body;
-
-        const userCreate = new User({ name,phone })
-        await userCreate.save()
+      const { name, phone, age } = req.body;
+    
+       const profilePicturePath = req.file.path;  
+  
+      try {
+        const newUser = new User(
+            { name, phone, age, profilePicture: profilePicturePath.slice(8)} 
+         );
+    
+        await newUser.save();
+        res.status(201).json({ message: 'User created successfully', data: newUser });
         
-        res.status(200).json({ message: `${ userCreate.name } is created`, data: userCreate });
-
-
-    }   catch(error) {
+      } catch (error) {
+        console.log(error);
         
-        next(new Error("Error creating user: " + error.message));
-        res.status(500).json({ message:`Internal server error!` })
+      }
+    } catch (error) {
+        console.log(error)
+      res.status(500).json({ message: 'Error creating user', error: error.message });
     }
-}
+  };
 
 
 
@@ -98,12 +106,18 @@ export const findAndUpdate = async (req, res, next) =>{
     
     try {
         const { id } = req.params;
-        const { name, phone } = req.body;
+        const UserData = {...req.body};
         
+        if(req.file && req.file.path){
+         UserData.profilePicture = req.file.path.slice(8)
+        }
+
+
+
         console.log (req.body)
          const updateUser = await User.findOneAndUpdate (
             { _id: id },
-            { $set: { name, phone } },
+            { $set: UserData },
             { new: true, runValidators: true }
         );
 
@@ -128,7 +142,7 @@ export const findAndUpdate = async (req, res, next) =>{
 
 
 
-//updqte many
+//update many
 
 export const updatemany = async (req, res, next) => {
   try {
@@ -136,7 +150,7 @@ export const updatemany = async (req, res, next) => {
     const { age } = req.params;
 
     const manyUpdate = await User.updateMany(
-      { age: { $gte: age } },
+      { age: { $gte: age } },  //grater than //$ls less than
       { name, phone }
     );
 
@@ -182,25 +196,6 @@ export const finddelete = async ( req, res, next)=>{
 
 
 
-export const createUserFile = async (req, res) => {
-    try {
-      const { name, phone, age } = req.body;
-      let profilePicturePath = null;
-  
-      
-      if (req.file) {
-        profilePicturePath = req.file.path;  
-      }
-  
-      const newUser = new User(
-          { name, phone, age, profilePicture: profilePicturePath }
-       );
-  
-      await newUser.save();
-      res.status(201).json({ message: 'User created successfully', data: newUser });
-    } catch (error) {
-      res.status(500).json({ message: 'Error creating user', error: error.message });
-    }
-  };
+
 
  
